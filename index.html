@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Selamat Bertambah Usia</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+body{
+  margin:0;
+  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+  font-family: system-ui, sans-serif;
+  overflow:hidden;
+  height: 100dvh;
+}
+
+*{ box-sizing:border-box; }
+
+.glass{
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(18px);
+  border:1px solid rgba(255,255,255,0.4);
+  width: 90%;
+  max-width: 360px;
+  margin:auto;
+  border-radius:20px;
+  padding:18px;
+  text-align:center;
+  z-index: 10;
+}
+
+/* BUTTON PIN BULAT */
+button.btn-pin {
+  transition:.2s;
+  font-size:18px;
+  background: rgba(255,255,255,0.3);
+  border: 1px solid rgba(255,255,255,0.5);
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+}
+button.btn-pin:active{transform:scale(.9);}
+
+/* TOMBOL UTAMA */
+.btn-utama {
+  background: #ff2e93;
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border-radius: 12px;
+  font-weight: bold;
+  margin-top: 15px;
+  animation: slowSway 3s ease-in-out infinite;
+}
+
+@keyframes slowSway {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.unlock { animation: slideUp .8s forwards; }
+@keyframes slideUp { to { transform: translateY(-100vh); opacity:0; } }
+
+.heart-target {
+  position: absolute;
+  font-size: 40px;
+  cursor: pointer;
+  z-index: 50;
+  animation: heartPop 0.4s ease-out;
+}
+@keyframes heartPop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+#usia-surprise {
+  position: fixed;
+  font-size: 100px;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 0 20px #ff2e93;
+  z-index: 100;
+  display: none;
+}
+
+.balon {
+  position: absolute;
+  font-size: 22px;
+  animation: floatUp 5s linear forwards;
+}
+@keyframes floatUp { 0% { transform: translateY(0); } 100% { transform: translateY(-110vh); opacity:0; } }
+
+.overlay-romantic {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.98), rgba(173, 216, 230, 0.98));
+  text-align: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.photo {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid white;
+  margin-bottom: 15px;
+}
+
+.nama-utama {
+  font-size: 28px;
+  font-weight: 900;
+  color: #ff2e93;
+  margin: 10px 0;
+  text-transform: uppercase;
+}
+
+#display { font-size: 24px; letter-spacing: 10px; margin: 10px 0; height: 30px; }
+
+/* TOMBOL RESTART LEBIH JELAS */
+.btn-restart {
+  margin-top: 25px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  background: rgba(255, 46, 147, 0.6);
+  border: 1.5px solid white;
+  padding: 8px 20px;
+  border-radius: 25px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+</style>
+</head>
+
+<body class="flex items-center justify-center h-screen">
+
+<audio id="lagu" src="dctunggaleka.mp3" loop></audio>
+
+<div id="lock" class="glass">
+  <h2 class="font-bold">🔐 PIN</h2>
+  <p style="font-size:12px;">tanggal istimewa kamu ❤️</p>
+  <div id="display"></div>
+
+  <div class="grid grid-cols-3 gap-3 mt-3">
+    <button class="btn-pin" onclick="inputPin('1')">1</button>
+    <button class="btn-pin" onclick="inputPin('2')">2</button>
+    <button class="btn-pin" onclick="inputPin('3')">3</button>
+    <button class="btn-pin" onclick="inputPin('4')">4</button>
+    <button class="btn-pin" onclick="inputPin('5')">5</button>
+    <button class="btn-pin" onclick="inputPin('6')">6</button>
+    <button class="btn-pin" onclick="inputPin('7')">7</button>
+    <button class="btn-pin" onclick="inputPin('8')">8</button>
+    <button class="btn-pin" onclick="inputPin('9')">9</button>
+    <button class="btn-pin text-red-500" onclick="hapus()">⌫</button>
+    <button class="btn-pin" onclick="inputPin('0')">0</button>
+    <button class="btn-pin text-green-600" onclick="cekPin()">✔</button>
+  </div>
+</div>
+
+<div id="game-area" style="display:none;" class="glass animate__animated">
+  <h2 class="text-pink-500 font-bold">Kumpulkan Cintanya ❤️</h2>
+  <p class="text-[10px] text-gray-500 mb-4">Tap hati yang muncul di layar</p>
+  <div class="w-full bg-gray-200 rounded-full h-1.5">
+    <div id="progress" class="bg-pink-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+  </div>
+</div>
+
+<div id="usia-surprise" class="animate__animated">24</div>
+
+<div id="kartu" style="display:none;" class="glass animate__animated">
+  <div id="step-content">
+    <h2 class="text-gray-500 italic text-sm">Selamat Bertambah Usia 🌷</h2>
+    <h1 class="nama-utama">SULIS WANTI SHELVIA</h1>
+    <button onclick="nextStep()" class="btn-utama">Pencet sini ya! ❤️</button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+let pin="", benar="060502";
+let step=0;
+let heartCount = 0;
+const targetHearts = 24;
+
+function inputPin(x){ if(pin.length<6){pin+=x;update();} }
+function hapus(){ pin=pin.slice(0,-1); update(); }
+function update(){ document.getElementById("display").innerText="•".repeat(pin.length); }
+
+function cekPin(){
+ if(pin===benar){
+  document.getElementById("lock").classList.add("unlock");
+  document.getElementById("lagu").play();
+  setTimeout(()=>{
+    document.getElementById("lock").style.display="none";
+    startGame();
+  },700);
+ } else { pin=""; update(); }
+}
+
+function startGame() {
+  const area = document.getElementById("game-area");
+  area.style.display = "block";
+  area.classList.add("animate__fadeInUp");
+  spawnHeart();
+}
+
+function spawnHeart() {
+  if (heartCount >= targetHearts) {
+    finishGame();
+    return;
+  }
+  const heart = document.createElement("div");
+  heart.className = "heart-target";
+  heart.innerHTML = "💖";
+  heart.style.left = Math.random() * (window.innerWidth - 50) + "px";
+  heart.style.top = 100 + Math.random() * (window.innerHeight - 200) + "px";
+  
+  heart.onclick = () => {
+    heart.remove();
+    heartCount++;
+    document.getElementById("progress").style.width = (heartCount/targetHearts*100) + "%";
+    spawnHeart();
+  };
+  document.body.appendChild(heart);
+}
+
+function finishGame() {
+  const gameArea = document.getElementById("game-area");
+  gameArea.classList.replace("animate__fadeInUp", "animate__fadeOutDown");
+  
+  setTimeout(() => {
+    gameArea.style.display = "none";
+    const usia = document.getElementById("usia-surprise");
+    usia.style.display = "block";
+    usia.classList.add("animate__zoomIn");
+    confetti({ particleCount: 200, spread: 90, origin: { y: 0.6 } });
+
+    setTimeout(() => {
+      usia.classList.replace("animate__zoomIn", "animate__fadeOut");
+      setTimeout(() => {
+        usia.style.display = "none";
+        const kartu = document.getElementById("kartu");
+        kartu.style.display = "block";
+        kartu.classList.add("animate__backInUp");
+      }, 500);
+    }, 2000);
+  }, 500);
+}
+
+function nextStep(){
+ step++;
+ const box = document.getElementById("step-content");
+
+ if(step===1){
+  box.innerHTML=`
+  <div class="animate__animated animate__fadeIn">
+    <p style="font-size:13px; line-height:1.6; color:#333;">
+    Selamat Ulang Tahun, calon Bini ❤︎<br><br>
+    ha-ha-ha<br><br<>
+    Semoga Allah melimpahkan keberkahan, kebaikan dan kebahagiaan di setiap napasmu.<br><br>
+    nanti baca Q.S Maryam ayat 33 ya 🤍<br><br>
+    Semoga juga, Allah melancarkan semua hajat kita berdua.
+    </p>
+    <button onclick="nextStep()" class="btn-utama">Lanjut →</button>
+  </div>`;
+ }
+ else if(step===2){
+  box.innerHTML=`<p class="animate__animated animate__bounceIn">tunggu bentar 🎈</p>`;
+  spawnBalloons();
+  setTimeout(()=>ending(),3500);
+ }
+}
+
+function spawnBalloons(){
+ for(let i=0; i<15; i++){
+  setTimeout(()=>{
+    let b=document.createElement("div");
+    b.className="balon";
+    b.innerText=["🎈","💖","🌸"][Math.floor(Math.random()*3)];
+    b.style.left=Math.random()*85+"%";
+    b.style.bottom="-50px";
+    document.body.appendChild(b);
+    setTimeout(()=>b.remove(),5000);
+  }, i*300);
+ }
+}
+
+function ending(){
+ let o=document.createElement("div");
+ o.id = "overlay-final";
+ o.className="overlay-romantic animate__animated animate__fadeIn";
+ o.innerHTML=`
+ <img src="aku.jpg" class="photo" onerror="this.src='https://i.imgur.com/8Km9tLL.png'">
+ <h2 style="color:#ff2e93; font-weight:900; font-size:24px;">🎉SELAMAT 24 TAHUN🎉</h2>
+ <p style="color:#555; font-size:14px; line-height:1.6; margin-top:10px; padding:0 20px;">
+ Terima kasih sudah hadir di hidupku.<br>
+ Semoga setiap langkahmu (langkah kita) selalu diberkahi,<br>
+ dan semoga aku selalu bisa mendukungmu 🤍
+ </p>
+ <button onclick="restartKeKartu()" class="btn-restart">← Baca Ulang Pesan</button>
+ `;
+ document.body.appendChild(o);
+ confetti({particleCount:150,spread:100});
+}
+
+// FUNGSI UNTUK KEMBALI KE KARTU (SETELAH GAME)
+function restartKeKartu() {
+  document.getElementById("overlay-final").remove(); // Hapus overlay ending
+  step = 0; // Reset langkah pesan
+  const kartu = document.getElementById("kartu");
+  kartu.style.display = "block";
+  
+  // Kembalikan isi konten kartu ke awal (Nama Sulis)
+  const box = document.getElementById("step-content");
+  box.innerHTML = `
+    <h2 class="text-gray-500 italic text-sm">Selamat Bertambah Usia 🌷</h2>
+    <h1 class="nama-utama">SULIS WANTI SHELVIA</h1>
+    <button onclick="nextStep()" class="btn-utama">Pencet sini! ❤️</button>
+  `;
+}
+</script>
+</body>
+</html>
